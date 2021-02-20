@@ -4,6 +4,9 @@ import pygame
 # pygame window:
 WIDTH, HEIGHT = 1000, 500
 FPS = 60
+BORDER_WIDTH = 10
+BORDER = pygame.Rect((WIDTH-BORDER_WIDTH)/2, 0, BORDER_WIDTH, HEIGHT)
+
 
 # Game colors:
 COLORS = {
@@ -25,3 +28,7 @@ P1_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(
                                                           (SHIP_WIDTH, SHIP_HEIGHT)), 270)
 P2_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('assets/spaceShipOrange.png'),
                                                               (SHIP_WIDTH, SHIP_HEIGHT)), 90)
+
+BLT_WIDTH = 10
+BLT_HEIGHT = 4
+MAX_BLTS = 5

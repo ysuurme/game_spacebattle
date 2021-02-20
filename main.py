@@ -22,6 +22,9 @@ def main():  # todo implement sounds for game start, lost pieces and game won
             if event.type == pygame.QUIT:
                 run = False
 
+            if event.type == pygame.KEYDOWN:
+                    game.shoot_bullet()
+
         keys_pressed = pygame.key.get_pressed()
         game.move(keys_pressed)
 
