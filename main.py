@@ -1,16 +1,14 @@
 # Based on 'Pygame in 90 minutes - For beginners' by Tech With Tim (https://www.youtube.com/watch?v=jO6qQDNa2UY&t=1824s)
 
 import pygame
-from spacebattle.config import WIDTH, HEIGHT, FPS, SHIP_SPEED
+from spacebattle.config import WIDTH, HEIGHT, FPS
 from spacebattle.game import Game
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Space Battle!')
+pygame.display.set_caption('Space Battle!')  # todo implement AI
 
 
-
-def main():  # todo implement sounds for game start, lost pieces and game won
-            # todo implement AI
+def main():  # todo implement sounds for game start, hit, game won etc.
     run = True
     clock = pygame.time.Clock()
     game = Game(WIN)
@@ -23,7 +21,11 @@ def main():  # todo implement sounds for game start, lost pieces and game won
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                    game.shoot_bullet()
+                if event.key == pygame.K_LCTRL:
+                    game.player1.shoot()
+
+                if event.key == pygame.K_RCTRL:
+                    game.player2.shoot()
 
         keys_pressed = pygame.key.get_pressed()
         game.move(keys_pressed)
