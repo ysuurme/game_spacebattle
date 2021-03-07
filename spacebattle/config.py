@@ -1,11 +1,16 @@
 # Configuration file holding constant values used throughout the project.
 import pygame
+pygame.font.init()
 
 # pygame window:
 WIDTH, HEIGHT = 1000, 500
 FPS = 60
 BORDER_WIDTH = 10
 BORDER = pygame.Rect((WIDTH - BORDER_WIDTH) / 2, 0, BORDER_WIDTH, HEIGHT)
+
+# pygame fonts:
+FONT_HEALTH = pygame.font.SysFont('comicsans', 40)
+FONT_WINNER = pygame.font.SysFont('comicsans', 75)
 
 # Game colors:
 COLORS = {
@@ -33,4 +38,8 @@ BACKGROUND = pygame.transform.scale(pygame.image.load('assets/spaceBackground.pn
 BLT_WIDTH = 10
 BLT_HEIGHT = 4
 BLT_SPEED = 10
+BLT_DAMAGE = 5
 MAX_BLTS = 3
+
+P1_HIT = pygame.USEREVENT + 1
+P2_HIT = pygame.USEREVENT + 2

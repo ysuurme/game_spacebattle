@@ -1,12 +1,19 @@
 import pygame
 
 from .config import BACKGROUND, BORDER, BORDER_WIDTH, WIDTH, HEIGHT, COLORS,\
-    P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, MAX_BLTS
+    P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, BLT_DAMAGE,\
+    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER
+
+
+def spaceship_hit(player):
+    player.health -= BLT_DAMAGE
+    # todo BULLET_HIT_SOUND.play()
 
 
 class Game:
     def __init__(self, win):
         self.win = win
+        self.game_over = False
         self.player1 = None
         self.player2 = None
         self.init_players()
@@ -14,11 +21,20 @@ class Game:
 
     def update(self):
         self.win.blit(BACKGROUND, (0, 0))
-        self.draw_border()
+        self.draw_game()
         self.blit_spaceships()
         self.draw_bullets()
         self.handle_bullets()
+        self.winner()
         pygame.display.update()
+
+    def draw_game(self):
+        pygame.draw.rect(self.win, COLORS['BLACK'], BORDER)  # draw middle border
+        p1_health = FONT_HEALTH.render(f"P1 Health: {self.player1.health}", 1, COLORS['WHITE'])
+        p2_health = FONT_HEALTH.render(f"P2 Health: {self.player2.health}", 1, COLORS['WHITE'])
+        self.win.blit(p1_health, (10, 10))
+        self.win.blit(p2_health, (WIDTH - p1_health.get_width() - 10, 10))
+
 
     def init_players(self):
         self.player1 = Player1(200, 250)
@@ -54,12 +70,10 @@ class Game:
         for b in self.bullets:
             b.shape.move_ip(b.BLT_SPEED, 0)
             if self.player1.hull.colliderect(b.shape):
-                print('Player 1 hit!')
-                pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1))
+                pygame.event.post(pygame.event.Event(P1_HIT))
                 self.bullets.remove(b)
             elif self.player2.hull.colliderect(b.shape):
-                print('Player 2 hit!')
-                pygame.event.post(pygame.event.Event(pygame.USEREVENT + 2))
+                pygame.event.post(pygame.event.Event(P2_HIT))
                 self.bullets.remove(b)
             elif b.x < 0:
                 self.bullets.remove(b)
@@ -80,8 +94,16 @@ class Game:
         self.win.blit(self.player1.spaceship, (self.player1.hull.x, self.player1.hull.y))
         self.win.blit(self.player2.spaceship, (self.player2.hull.x, self.player2.hull.y))
 
-    def draw_border(self):
-        pygame.draw.rect(self.win, COLORS['BLACK'], BORDER)
+    def winner(self):
+        if self.player1.health <= 0:
+            text = "Player 2 has won the game!"
+            self.game_over = True
+        elif self.player2.health <= 0:
+            text = "Player 1 has won the game!"
+            self.game_over = True
+        if self.game_over:
+            winner_text = FONT_WINNER.render(text, 1, COLORS['WHITE'])
+            self.win.blit(winner_text, (WIDTH/2 - winner_text.get_width()/2, HEIGHT/2 - winner_text.get_height()/2))
 
 
 class Spaceship:
@@ -94,7 +116,6 @@ class Player1(Spaceship):
     def __init__(self, x, y):
         super().__init__()
         self.spaceship = P1_SPACESHIP
-        self.hit = pygame.USEREVENT + 1
         self.hull = pygame.Rect(x, y, SHIP_WIDTH, SHIP_HEIGHT)
 
 
