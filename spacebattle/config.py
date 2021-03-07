@@ -1,6 +1,7 @@
 # Configuration file holding constant values used throughout the project.
 import pygame
 pygame.font.init()
+pygame.mixer.init()
 
 # pygame window:
 WIDTH, HEIGHT = 1000, 500
@@ -28,7 +29,7 @@ SHIP_WIDTH = 60
 SHIP_HEIGHT = 60
 SHIP_SPEED = 5
 
-P1_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('assets/spaceShipBlue.png'),
+P1_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('assets/spaceShipGreen.png'),
                                                               (SHIP_WIDTH, SHIP_HEIGHT)), 270)
 P2_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('assets/spaceShipOrange.png'),
                                                               (SHIP_WIDTH, SHIP_HEIGHT)), 90)
@@ -43,3 +44,6 @@ MAX_BLTS = 3
 
 P1_HIT = pygame.USEREVENT + 1
 P2_HIT = pygame.USEREVENT + 2
+
+SOUND_BLT_FIRE = pygame.mixer.Sound('assets/BLT_FIRE.mp3')
+SOUND_BLT_HIT = pygame.mixer.Sound('assets/BLT_HIT.mp3')

@@ -2,12 +2,12 @@ import pygame
 
 from .config import BACKGROUND, BORDER, BORDER_WIDTH, WIDTH, HEIGHT, COLORS,\
     P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, BLT_DAMAGE,\
-    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER
+    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER, SOUND_BLT_FIRE, SOUND_BLT_HIT
 
 
 def spaceship_hit(player):
     player.health -= BLT_DAMAGE
-    # todo BULLET_HIT_SOUND.play()
+    SOUND_BLT_HIT.play()
 
 
 class Game:
@@ -33,8 +33,7 @@ class Game:
         p1_health = FONT_HEALTH.render(f"P1 Health: {self.player1.health}", 1, COLORS['WHITE'])
         p2_health = FONT_HEALTH.render(f"P2 Health: {self.player2.health}", 1, COLORS['WHITE'])
         self.win.blit(p1_health, (10, 10))
-        self.win.blit(p2_health, (WIDTH - p1_health.get_width() - 10, 10))
-
+        self.win.blit(p2_health, (WIDTH - p2_health.get_width() - 10, 10))
 
     def init_players(self):
         self.player1 = Player1(200, 250)
@@ -62,6 +61,7 @@ class Game:
     def shoot(self, player):
         if player.ammo >= MAX_BLTS:
             bullet = Bullet(player)  # Create bullet
+            SOUND_BLT_FIRE.play()
             self.bullets.append(bullet)
         else:
             print(f'Player: {type(player).__name__} is out of ammo!')
@@ -83,7 +83,7 @@ class Game:
     def draw_bullets(self):
         for b in self.bullets:
             if b.player == 'Player1':
-                color = COLORS['RED']
+                color = COLORS['GREEN']
             elif b.player == 'Player2':
                 color = COLORS['YELLOW']
             else:
@@ -95,14 +95,14 @@ class Game:
         self.win.blit(self.player2.spaceship, (self.player2.hull.x, self.player2.hull.y))
 
     def winner(self):
+        winner_text = ""
         if self.player1.health <= 0:
-            text = "Player 2 has won the game!"
+            winner_text = FONT_WINNER.render("Player 2 has won the game!", 1, COLORS['YELLOW'])
             self.game_over = True
         elif self.player2.health <= 0:
-            text = "Player 1 has won the game!"
+            winner_text = FONT_WINNER.render("Player 1 has won the game!", 1, COLORS['GREEN'])
             self.game_over = True
         if self.game_over:
-            winner_text = FONT_WINNER.render(text, 1, COLORS['WHITE'])
             self.win.blit(winner_text, (WIDTH/2 - winner_text.get_width()/2, HEIGHT/2 - winner_text.get_height()/2))
 
 
