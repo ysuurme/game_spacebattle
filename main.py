@@ -22,10 +22,12 @@ def main():  # todo implement sounds for game start, hit, game won etc.
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LCTRL:
-                    game.player1.shoot()
+                    player = game.player1
+                    game.shoot(player)
 
                 if event.key == pygame.K_RCTRL:
-                    game.player2.shoot()
+                    player = game.player2
+                    game.shoot(player)
 
         keys_pressed = pygame.key.get_pressed()
         game.move(keys_pressed)

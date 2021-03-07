@@ -1,7 +1,7 @@
 import pygame
 
 from .config import BACKGROUND, BORDER, BORDER_WIDTH, WIDTH, HEIGHT, COLORS,\
-    P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT,BLT_SPEED, MAX_BLTS
+    P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, MAX_BLTS
 
 
 class Game:
@@ -10,11 +10,14 @@ class Game:
         self.player1 = None
         self.player2 = None
         self.init_players()
+        self.bullets = []
 
     def update(self):
         self.win.blit(BACKGROUND, (0, 0))
         self.draw_border()
         self.blit_spaceships()
+        self.draw_bullets()
+        self.handle_bullets()
         pygame.display.update()
 
     def init_players(self):
@@ -40,28 +43,35 @@ class Game:
         if keys_pressed[pygame.K_DOWN] and self.player2.y + SHIP_HEIGHT + SHIP_SPEED < HEIGHT:  # P2 down
             self.player2.y += SHIP_SPEED
 
-    def handle_bullets(self, bullets):
-        for bullet in bullets:
-            bullet.x += BLT_SPEED
-            if self.player1.colliderect(bullet):
+    def shoot(self, player):
+        bullet = Bullet(player)  # Create bullet
+        self.bullets.append(bullet)
+
+    def handle_bullets(self):
+        for b in self.bullets:
+            b.shape.move_ip(b.BLT_SPEED, 0)
+            if self.player1.hull.colliderect(b.shape):
                 print('Player 1 hit!')
                 # pygame.event.post(pygame.event.Event(P1_SPACESHIP_HIT))
-                self.bullets.remove(bullet)
-            if self.player2.colliderect(bullet):
+                self.bullets.remove(b)
+            if self.player2.hull.colliderect(b.shape):
                 print('Player 2 hit!')
-                # pygame.event.post(pygame.event.Event(P1_SPACESHIP_HIT))
-                self.bullets.remove(bullet)
-            if bullet.x < 0:
-                self.bullets.remove(bullet)
-            elif bullet.x > WIDTH:
-                self.bullets.remove(bullet)
+                # pygame.event.post(pygame.event.Event(P2_SPACESHIP_HIT))
+                self.bullets.remove(b)
+            if b.x < 0:
+                self.bullets.remove(b)
+            elif b.x > WIDTH:
+                self.bullets.remove(b)
 
     def draw_bullets(self):
-        for bullet in self.player1.bullets:
-            pygame.draw.rect(self.win, COLORS['BLUE'], bullet)
-        for bullet in self.player2.bullets:
-            pygame.draw.rect(self.win, COLORS['YELLOW'], bullet)
-
+        for b in self.bullets:
+            if b.player == 'Player1':
+                color = COLORS['RED']
+            elif b.player == 'Player2':
+                color = COLORS['YELLOW']
+            else:
+                color = COLORS['WHITE']
+            pygame.draw.rect(self.win, color, b.shape)
 
     def blit_spaceships(self):
         self.win.blit(self.player1.spaceship, (self.player1.x, self.player1.y))
@@ -74,7 +84,7 @@ class Game:
 class Spaceship:
     def __init__(self):
         self.health = 100
-        self.bullets = []
+        self.bullets = 5
         self.ammo = MAX_BLTS
 
 
@@ -84,13 +94,14 @@ class Player1(Spaceship):
         self.x = x
         self.y = y
         self.spaceship = P1_SPACESHIP
-        self.hit = pygame.USEREVENT +1
+        self.hit = pygame.USEREVENT + 1
         self.hull = pygame.Rect(x, y, SHIP_WIDTH, SHIP_HEIGHT)
 
-    def shoot(self):
-        if len(self.bullets) < self.ammo:
-            self.bullets.append(Bullet(self))
-            self.handle_bullet(self.bullets)
+        def shoot_bullet():
+            if self.bullets < self.ammo:
+                return True
+            else:
+                return "Player 1 is out of ammo!"
 
 
 class Player2(Spaceship):
@@ -102,20 +113,26 @@ class Player2(Spaceship):
         self.hit = pygame.USEREVENT + 2
         self.hull = pygame.Rect(x, y, SHIP_WIDTH, SHIP_HEIGHT)
 
-    def shoot(self):
-        if len(self.bullets) < self.ammo:
-            self.ammo -= 1
-            self.bullets.append(Bullet(self))
+        def shoot_bullet():
+            if self.bullets < self.ammo:
+                return True
+            else:
+                return "Player 2 is out of ammo!"
 
 
 class Bullet:
-    def __init__(self, spaceship):
-        self.spaceship = spaceship
-        self.x = spaceship.x  # todo if player 1 bullet x is x + spaceship width
-        self.y = spaceship.y
+    def __init__(self, player):
+        if type(player).__name__ == 'Player1':
+            self.player = 'Player1'
+            self.x = player.x + SHIP_WIDTH  # Player 1 shoots from origin + ship width
+            self.BLT_SPEED = BLT_SPEED  # Player1 shoots to the right
+
+        if type(player).__name__ == 'Player2':
+            self.player = 'Player2'
+            self.x = player.x - BLT_WIDTH  # Player 2 shoots from origin - bullet width
+            self.BLT_SPEED = -BLT_SPEED  # Player2 shoots to the left
+
+        self.y = player.y + SHIP_HEIGHT // 2
         self.BLT_WIDTH = BLT_WIDTH
         self.BLT_HEIGHT = BLT_HEIGHT
-        self.BLT_SPEED = +BLT_SPEED  # todo reverse bullet for player 2
-        self.BLT_SPEED = -BLT_SPEED
-
-        self.bullet = pygame.Rect(self.x + SHIP_WIDTH, self.y + SHIP_HEIGHT//2, self.BLT_WIDTH, self.BLT_HEIGHT)
+        self.shape = pygame.Rect(self.x, self.y, self.BLT_WIDTH, self.BLT_HEIGHT)
