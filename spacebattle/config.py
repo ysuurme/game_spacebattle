@@ -33,4 +33,4 @@ BACKGROUND = pygame.transform.scale(pygame.image.load('assets/spaceBackground.pn
 BLT_WIDTH = 10
 BLT_HEIGHT = 4
 BLT_SPEED = 10
-MAX_BLTS = 5
+MAX_BLTS = 3
