@@ -27,7 +27,7 @@ COLORS = {
 # Game assets
 SHIP_WIDTH = 60
 SHIP_HEIGHT = 60
-SHIP_SPEED = 5
+SHIP_SPEED = 8
 
 P1_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('assets/spaceShipGreen.png'),
                                                               (SHIP_WIDTH, SHIP_HEIGHT)), 270)

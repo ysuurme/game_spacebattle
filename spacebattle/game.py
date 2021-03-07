@@ -25,13 +25,14 @@ class Game:
         self.blit_spaceships()
         self.draw_bullets()
         self.handle_bullets()
+        self.reload()
         self.winner()
         pygame.display.update()
 
     def draw_game(self):
         pygame.draw.rect(self.win, COLORS['BLACK'], BORDER)  # draw middle border
-        p1_health = FONT_HEALTH.render(f"P1 Health: {self.player1.health}", 1, COLORS['WHITE'])
-        p2_health = FONT_HEALTH.render(f"P2 Health: {self.player2.health}", 1, COLORS['WHITE'])
+        p1_health = FONT_HEALTH.render(f"P1 Health: {self.player1.health}", 1, COLORS['GREEN'])
+        p2_health = FONT_HEALTH.render(f"P2 Health: {self.player2.health}", 1, COLORS['YELLOW'])
         self.win.blit(p1_health, (10, 10))
         self.win.blit(p2_health, (WIDTH - p2_health.get_width() - 10, 10))
 
@@ -59,7 +60,8 @@ class Game:
             self.player2.hull.move_ip(0, SHIP_SPEED)
 
     def shoot(self, player):
-        if player.ammo >= MAX_BLTS:
+        if player.ammo >= 0:
+            player.ammo -= 1
             bullet = Bullet(player)  # Create bullet
             SOUND_BLT_FIRE.play()
             self.bullets.append(bullet)
@@ -89,6 +91,12 @@ class Game:
             else:
                 color = COLORS['WHITE']
             pygame.draw.rect(self.win, color, b.shape)
+
+    def reload(self):  # todo limit bullet spamming
+        if self.player1.ammo < MAX_BLTS:
+            self.player1.ammo += 1
+        if self.player2.ammo < MAX_BLTS:
+            self.player2.ammo += 1
 
     def blit_spaceships(self):
         self.win.blit(self.player1.spaceship, (self.player1.hull.x, self.player1.hull.y))
