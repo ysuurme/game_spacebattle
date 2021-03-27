@@ -2,7 +2,8 @@
 # (https://www.youtube.com/watch?v=jO6qQDNa2UY&t=1824s)
 
 import pygame
-from spacebattle.config import WIDTH, HEIGHT, FPS, P1_HIT, P2_HIT
+import sys
+from spacebattle.config import WIDTH, HEIGHT, FPS, P1_HIT, P2_HIT, QUIT
 from spacebattle.game import Game, spaceship_hit
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -18,10 +19,9 @@ def main():  # todo implement sounds for game start, game won
         clock.tick(FPS)
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+            if event.type == pygame.QUIT or event.type == QUIT:
                 pygame.quit()
-                break
+                sys.exit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LCTRL:

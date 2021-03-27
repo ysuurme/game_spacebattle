@@ -2,7 +2,7 @@ import pygame
 
 from .config import BACKGROUND, BORDER, BORDER_WIDTH, WIDTH, HEIGHT, COLORS,\
     P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, BLT_DAMAGE,\
-    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER, SOUND_BLT_FIRE, SOUND_BLT_HIT
+    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER, SOUND_BLT_FIRE, SOUND_BLT_HIT, QUIT
 
 
 def spaceship_hit(player):
@@ -41,6 +41,9 @@ class Game:
         self.player2 = Player2(800, 250)
 
     def move(self, keys_pressed):
+        if keys_pressed[pygame.K_ESCAPE]:  # Quit game
+            pygame.event.post(pygame.event.Event(QUIT))
+
         if keys_pressed[pygame.K_a] and self.player1.hull.x - SHIP_SPEED > 0:  # P1 left
             self.player1.hull.move_ip(-SHIP_SPEED, 0)
         if keys_pressed[pygame.K_w] and self.player1.hull.y - SHIP_SPEED > 0:  # P1 up
