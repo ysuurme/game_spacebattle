@@ -2,7 +2,7 @@ import pygame
 
 from .config import BACKGROUND, BORDER, BORDER_WIDTH, WIDTH, HEIGHT, COLORS,\
     P1_SPACESHIP, P2_SPACESHIP, SHIP_WIDTH, SHIP_HEIGHT, SHIP_SPEED, BLT_WIDTH, BLT_HEIGHT, BLT_SPEED, BLT_DAMAGE,\
-    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER, SOUND_BLT_FIRE, SOUND_BLT_HIT, QUIT
+    MAX_BLTS, P1_HIT, P2_HIT, FONT_HEALTH, FONT_WINNER, SOUND_BLT_FIRE, SOUND_BLT_HIT, SOUND_BLT_NoAmmo, QUIT
 
 
 def spaceship_hit(player):
@@ -25,7 +25,6 @@ class Game:
         self.blit_spaceships()
         self.draw_bullets()
         self.handle_bullets()
-        self.reload()
         self.winner()
         pygame.display.update()
 
@@ -63,13 +62,13 @@ class Game:
             self.player2.hull.move_ip(0, SHIP_SPEED)
 
     def shoot(self, player):
-        if player.ammo >= 0:
-            player.ammo -= 1
+        player.ammo = MAX_BLTS - sum(b.player == type(player).__name__ for b in self.bullets)
+        if player.ammo > 0:
             bullet = Bullet(player)  # Create bullet
             SOUND_BLT_FIRE.play()
             self.bullets.append(bullet)
         else:
-            print(f'Player: {type(player).__name__} is out of ammo!')
+            SOUND_BLT_NoAmmo.play()
 
     def handle_bullets(self):
         for b in self.bullets:
@@ -80,9 +79,9 @@ class Game:
             elif self.player2.hull.colliderect(b.shape):
                 pygame.event.post(pygame.event.Event(P2_HIT))
                 self.bullets.remove(b)
-            elif b.x < 0:
+            elif b.shape.x < 0:
                 self.bullets.remove(b)
-            elif b.x > WIDTH:
+            elif b.shape.x > WIDTH:
                 self.bullets.remove(b)
 
     def draw_bullets(self):
@@ -94,12 +93,6 @@ class Game:
             else:
                 color = COLORS['WHITE']
             pygame.draw.rect(self.win, color, b.shape)
-
-    def reload(self):  # todo limit bullet spamming
-        if self.player1.ammo < MAX_BLTS:
-            self.player1.ammo += 1
-        if self.player2.ammo < MAX_BLTS:
-            self.player2.ammo += 1
 
     def blit_spaceships(self):
         self.win.blit(self.player1.spaceship, (self.player1.hull.x, self.player1.hull.y))

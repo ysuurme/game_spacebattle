@@ -42,11 +42,11 @@ BLT_SPEED = 10
 BLT_DAMAGE = 5
 MAX_BLTS = 3
 
-P1_HIT = pygame.USEREVENT + 1
-P2_HIT = pygame.USEREVENT + 2
-
 SOUND_BLT_FIRE = pygame.mixer.Sound('assets/BLT_FIRE.mp3')
 SOUND_BLT_HIT = pygame.mixer.Sound('assets/BLT_HIT.mp3')
+SOUND_BLT_NoAmmo = pygame.mixer.Sound('assets/BLT_NoAmmo.mp3')
 
 # Game events:
 QUIT = pygame.USEREVENT + 1
+P1_HIT = pygame.USEREVENT + 2
+P2_HIT = pygame.USEREVENT + 3
